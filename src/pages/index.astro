@@ -68,3 +68,161 @@ import "../global.css";
     </div>
   </body>
 </html>
+
+<script>
+  import data from "../HotelRoomDetails.json";
+
+  // Get references to form elements
+  const form = document.querySelector<HTMLFormElement>("form");
+  const decreaseButton =
+    document.querySelector<HTMLButtonElement>("[data-decrease]");
+  const increaseButton =
+    document.querySelector<HTMLButtonElement>("[data-increase]");
+  const currentInput =
+    document.querySelector<HTMLInputElement>("[data-current]");
+  const nightAmount = document.querySelector<HTMLParagraphElement>(
+    "[data-night-amount]"
+  );
+
+  // Extract room data from JSON file
+  const rooms = data.en[1].rooms;
+
+  // Define types for room and room credit key
+  type Room = (typeof rooms)["room1"];
+  type RoomCreditKey = keyof Room["resort_credits_nights"];
+
+  // Prevent default form submission behaviour
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+  });
+
+  // Update input value and render table rows on initial load
+  const inputValue = Number(currentInput?.value);
+  updateInput(inputValue.toString());
+
+  // Validate input on input change
+  currentInput?.addEventListener("input", (e) => {
+    const isInputValid = currentInput?.checkValidity();
+    if (!isInputValid) {
+      form?.reportValidity();
+    }
+  });
+
+  // Increase button click event handler
+  increaseButton?.addEventListener("click", () => {
+    const limit = Number(currentInput?.getAttribute("max"));
+    const currentValue = Number(currentInput?.value);
+
+    const isRangeOverflow = currentInput?.validity.rangeOverflow;
+    const isRangeUnderflow = currentInput?.validity.rangeUnderflow;
+    const newValue = Math.min(limit, currentValue + 1);
+    if (isRangeOverflow) {
+      form?.reportValidity();
+    } else if (isRangeUnderflow) {
+      updateInput(newValue.toString());
+      form?.reportValidity();
+    } else {
+      updateInput(newValue.toString());
+    }
+  });
+
+  // Decrease button click event handler
+  decreaseButton?.addEventListener("click", () => {
+    const limit = Number(currentInput?.getAttribute("min"));
+    const currentValue = Number(currentInput?.value);
+
+    const isRangeUnderflow = currentInput?.validity.rangeUnderflow;
+    const isRangeOverflow = currentInput?.validity.rangeOverflow;
+    const newValue = Math.max(limit, currentValue - 1);
+
+    if (isRangeUnderflow) {
+      form?.reportValidity();
+    } else if (isRangeOverflow) {
+      updateInput(newValue.toString());
+      form?.reportValidity();
+    } else {
+      updateInput(newValue.toString());
+    }
+  });
+
+  // Update input value and render table rows
+  function updateInput(value: string) {
+    if (!currentInput || !nightAmount) return;
+
+    currentInput.value = value;
+    nightAmount.textContent = `${value} Nights`;
+    
+    // clear previous tbody value
+    const tbody = document.querySelector("tbody") as HTMLTableSectionElement;
+    tbody.innerHTML = "";
+    renderTableRows(value);
+  }
+
+  // Render table rows based on input value
+  function renderTableRows(inputValue: string) {
+    const isFormValid = form?.checkValidity();
+    if (!isFormValid) return;
+    Object.entries(rooms).forEach(([roomKey, room]) => {
+      const areResortCredits = room.resort_credits === "true";
+      renderTableRow({
+        roomName: room.name,
+        resortCreditAmount:
+          room.resort_credits_nights[inputValue as RoomCreditKey],
+        areResortCredits,
+      });
+    });
+  }
+
+  type RenderTableRowProps = {
+    roomName: string;
+    resortCreditAmount: string;
+    areResortCredits: boolean;
+  };
+
+  // Function to render a table row
+  // Parameters:
+  // - roomName: The name of the room
+  // - resortCreditAmount: The amount of resort credit
+  // - areResortCredits: Indicates if there are resort credits for the room
+  function renderTableRow({
+    roomName,
+    resortCreditAmount,
+    areResortCredits,
+  }: RenderTableRowProps) {
+    const tr = document.createElement("tr");
+    tr.classList.add("bg-white", "border-b");
+
+    const th = document.createElement("th");
+    th.scope = "row";
+    th.classList.add("px-6", "py-4");
+    if (!areResortCredits) {
+      th.classList.add("text-fade");
+      th.title = "No credits"; // Display a tooltip if there are no resort credits
+    }
+    th.textContent = roomName;
+
+    const td = document.createElement("td");
+    td.classList.add("px-6", "py-4", "text-right", "text-sm");
+    if (!areResortCredits) {
+      td.classList.add("text-fade");
+      td.title = "No credits"; // Display a tooltip if there are no resort credits
+    }
+
+    if (resortCreditAmount) {
+      const span = document.createElement("span");
+      span.classList.add("font-bold", "text-base");
+      span.textContent = `$${resortCreditAmount}`;
+
+      const span2 = document.createElement("span");
+      span2.textContent = " /USD";
+
+      td.appendChild(span);
+      td.appendChild(span2);
+    }
+
+    tr.appendChild(th);
+    tr.appendChild(td);
+
+    document.querySelector("tbody")?.appendChild(tr);
+  }
+</script>
