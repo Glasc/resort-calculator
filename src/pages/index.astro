@@ -11,6 +11,54 @@ import "../global.css";
     <title>Resort Credit Calculator</title>
   </head>
   <body class="space-y-12">
-    
+    <div class="max-w-2xl mx-auto p-3 sm:p-8 space-y-6">
+      <h1 class="text-center title text-3xl font-semibold">
+        Resort Credit Calculator
+      </h1>
+      <div>
+        <form class="flex justify-center gap-x-3">
+          <button
+            data-decrease
+            type="button"
+            class="font-semibold text-xl bg-gradient-to-b from-white to-gray-200 border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 align-middle p-4 w-2 h-2 rounded-full flex justify-center items-center"
+            >-</button
+          >
+          <input
+            min="3"
+            max="10"
+            value="3"
+            required
+            data-current
+            class="w-full max-w-[3.2rem] border border-blue-950 p-1 rounded font-semibold text-center bg-slate-100 invalid:border-red-600 invalid:text-red-800 invalid:outline-red-600 text-lg"
+            type="number"
+            name="amount"
+            autocomplete="off"
+          />
+          <button
+            data-increase
+            type="button"
+            class="font-semibold text-xl bg-gradient-to-b from-white to-gray-200 border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 align-middle p-4 w-2 h-2 rounded-full flex justify-center items-center"
+            >+</button
+          >
+        </form>
+        <p class="text-center font-medium">Nights</p>
+      </div>
+
+      <div class="relative overflow-x-auto">
+        <table class="w-full text-left">
+          <thead class="text-gray-700 uppercase bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3"> Room</th>
+              <th data-night-amount scope="col" class="px-6 py-3 text-right"
+              ></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="text-center text-inherit/30 text-sm">
+        Terms and Conditions for Resort Credit
+      </p>
+    </div>
   </body>
 </html>
