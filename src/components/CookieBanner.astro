@@ -1,0 +1,74 @@
+---
+import Icon from "./Icon.astro";
+---
+
+<section
+  id="cookie-banner"
+  class="fixed opacity-0 transition-opacity duration-300 w-full mx-auto md:max-w-[60vw] md:gap-x-4 left-1/2 bottom-16 rounded-2xl transform -translate-x-1/2"
+>
+  <div
+    class="lg:flex gap-4 justify-between bg-white border border-gray-200 p-4 mx-4"
+  >
+    <div class="flex items-center justify-center lg:justify-normal gap-x-4">
+      <Icon />
+      <p class="text-sm text-gray-600">
+        By using our site you agree our <a
+          href="#"
+          class="text-gray-500 hover:underline">Cookie Policy</a
+        >.
+      </p>
+    </div>
+
+    <div class="flex items-center mt-6 lg:mt-0 gap-x-4 shrink-0">
+      <button
+        class="w-1/2 text-xs text-gray-800 underline transition-colors duration-300 lg:w-auto focus:outline-none"
+      >
+        Cookie Setting
+      </button>
+
+      <button
+        id="accept-cookies"
+        class="text-xs w-1/2 md:w-auto font-medium bg-gray-800 rounded-lg hover:bg-gray-700 text-white px-4 py-2.5 duration-300 transition-colors focus:outline-none"
+      >
+        Accept All Cookies
+      </button>
+    </div>
+  </div>
+</section>
+
+<script>
+  const getCookie = (name: string) => {
+    const value = " " + document.cookie;
+    const parts = value.split(" " + name + "=");
+    return parts.length < 2 ? undefined : parts.pop()?.split(";").shift();
+  };
+
+  const setCookie = function (
+    name: string,
+    value: string,
+    expiryDays?: number
+  ) {
+    const exdate = new Date();
+    exdate.setHours(
+      exdate.getHours() +
+        (typeof expiryDays !== "number" ? 365 : expiryDays) * 24
+    );
+    document.cookie =
+      name + "=" + value + ";expires=" + exdate.toUTCString() + ";path=/";
+  };
+
+  const cookiesButton =
+    document.querySelector<HTMLButtonElement>("#accept-cookies");
+  const cookieBanner = document.querySelector<HTMLDivElement>("#cookie-banner");
+  const cookieName = "cookiePolicyAccepted";
+  const hasCookie = getCookie(cookieName);
+
+  if (!hasCookie) {
+    cookieBanner?.classList.replace("opacity-0", "opacity-100");
+  }
+
+  cookiesButton?.addEventListener("click", () => {
+    setCookie(cookieName, "1", 90);
+    cookieBanner?.classList.replace("opacity-100", "opacity-0");
+  });
+</script>

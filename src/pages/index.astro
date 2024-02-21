@@ -1,5 +1,6 @@
 ---
 import "../global.css";
+import CookieBanner from "../components/CookieBanner.astro"
 ---
 
 <html lang="en">
@@ -66,6 +67,7 @@ import "../global.css";
         Terms and Conditions for Resort Credit
       </p>
     </div>
+    <CookieBanner />
   </body>
 </html>
 
@@ -151,7 +153,7 @@ import "../global.css";
 
     currentInput.value = value;
     nightAmount.textContent = `${value} Nights`;
-    
+
     // clear previous tbody value
     const tbody = document.querySelector("tbody") as HTMLTableSectionElement;
     tbody.innerHTML = "";
